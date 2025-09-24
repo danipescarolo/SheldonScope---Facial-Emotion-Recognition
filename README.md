@@ -1,6 +1,5 @@
 # Sheldonscope – Facial Emotion Recognition
-Un'applicazione Python che rileva landmark facciali e emozioni in tempo reale tramite webcam, combinando MediaPipe Face Mesh e FER (Facial Emotion Recognition).
-
+Un'applicazione Python che rileva landmark facciali e emozioni in tempo reale tramite webcam, video o immagini, combinando MediaPipe Face Mesh e FER (Facial Emotion Recognition).
 
 ## Funzionalità
 - Rilevamento in tempo reale del volto tramite **MediaPipe**.
@@ -13,12 +12,13 @@ Un'applicazione Python che rileva landmark facciali e emozioni in tempo reale tr
   - Triste  
   - Sorpreso  
   - Neutro
-- Interfaccia semplice che mostra direttamente il video con annotazioni.
-
+- Ridimensionamento automatico di video e immagini a **640x480** mantenendo le proporzioni.
+- Interfaccia semplice che mostra direttamente il video o l’immagine con annotazioni.
 
 ## Requisiti
 Installare le librerie necessarie (testato con Python 3.11):
 pip install -r requirements.txt
+
 
 Nota: aprire il file
 <.venv>/Lib/site-packages/fer/classes.py
@@ -33,6 +33,7 @@ numpy==1.26.4
 fer==22.5.1
 tensorflow==2.18.0
 mtcnn==0.1.1
+Pillow==10.2.0
 
 
 ## Modelli usati:
@@ -43,8 +44,21 @@ mtcnn==0.1.1
 
 ## Utilizzo
 Avviare il programma principale:
+
+Per webcam (default):
 python main.py
-Premere q per uscire.
+
+
+Per un video:
+python main.py video percorso_al_video.mp4
+
+
+Per un’immagine:
+python main.py image percorso_immagine.jpg
+
+
+Premere q per uscire (webcam/video).
+Per le immagini, il programma si chiuderà dopo la visualizzazione.
 
 
 ## Struttura del progetto

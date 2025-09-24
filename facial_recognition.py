@@ -149,7 +149,6 @@ class LandmarkDetector():
         facial_elements = self.extract_face_elements(lms, frame.shape)
         x_min, x_max, y_min, y_max = self.extract_roi(facial_elements, frame.shape[1], frame.shape[0])  
         roi = frame[y_min:y_max, x_min:x_max].copy()
-        centers = self.get_facial_region_centers(facial_elements) 
         annotated_frame = self.draw_facial_elements(frame, facial_elements) 
 
         return annotated_frame, facial_elements, centers, roi, x_min, y_min
