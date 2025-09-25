@@ -1,9 +1,9 @@
 import cv2
-from facial_recognition import LandmarkDetector
-from emotion_recognition import detect_emotion
 import sys
 from PIL import Image, ImageOps
 import numpy as np
+from facial_recognition import LandmarkDetector
+from emotion_recognition import detect_emotion
 
 
 def resize_with_pil(frame, max_width=640, max_height=480):

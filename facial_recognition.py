@@ -31,9 +31,9 @@ class LandmarkDetector():
         self.right_eye_indices = [
             362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398
         ]
-        
-        self.nose_indices = [1, 6, 195,98,327,5, 4, 45, 220, 275, 440]
 
+        self.nose_indices = [6, 456, 360, 455, 460, 462, 242, 240, 235, 131, 236, 6, 1] 
+        
         self.mouth_indices = [
             61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 308, 324, 318, 402, 317, 14, 87, 178, 88,
             78, 95, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308, 324, 318, 402, 317, 14, 87, 178, 88
@@ -82,8 +82,8 @@ class LandmarkDetector():
     
     def _extract_facial_contour(self, landmarks, width, height):
         points = []
-        offset_a = 15
-        offset_b = 8
+        offset_a = 22
+        offset_b = 17
         for i in self.facial_contour_indices:
             if i < len(landmarks.landmark):
                 x = int(landmarks.landmark[i].x * width)
