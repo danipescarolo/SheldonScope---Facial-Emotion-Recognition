@@ -1,0 +1,39 @@
+# Cartelle da ignorare
+__pycache__/
+.env/
+node_modules/
+.venv/
+esempi
+verifiche
+
+# File temporanei e di sistema
+*.pyc
+*.log
+*.tmp
+*.iss
+
+# File di configurazione specifici dell’IDE
+.vscode/
+.idea/
+
+# File di output
+dist/
+build/
+
+# File per memorizzazione dati
+*.csv
+*.json
+*.db
+*.joblib
+*.pdf
+
+# Estensioni da escludere
+*.png
+*.jpeg
+*.iss
+*.spec
+
+# File specifici
+SheldonScope.code-workspace
+
+

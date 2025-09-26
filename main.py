@@ -1,9 +1,14 @@
 import cv2
 import sys
+import os
 from PIL import Image, ImageOps
 import numpy as np
 from facial_recognition import LandmarkDetector
 from emotion_recognition import detect_emotion
+
+# Creazione della cartella output solo se siamo in Docker
+if os.path.exists("/.dockerenv"):
+    os.makedirs("output", exist_ok=True)
 
 
 def resize_with_pil(frame, max_width=640, max_height=480):
@@ -11,6 +16,22 @@ def resize_with_pil(frame, max_width=640, max_height=480):
     img = Image.fromarray(img)
     resized = ImageOps.contain(img, (max_width, max_height))
     return cv2.cvtColor(np.array(resized), cv2.COLOR_RGB2BGR)
+
+
+def can_show_gui():
+    return os.environ.get("DISPLAY") is not None or sys.platform.startswith("win")
+
+
+def safe_imshow(window_name, frame, output_path="output/output.jpg"):
+    if can_show_gui():
+        cv2.imshow(window_name, frame)
+    else:
+        # Salva il frame solo se la cartella esiste
+        if os.path.exists(os.path.dirname(output_path)):
+            cv2.imwrite(output_path, frame)
+            print(f"[INFO] Output salvato in {output_path}")
+        else:
+            print(f"[INFO] La cartella {os.path.dirname(output_path)} non esiste, frame non salvato.")
 
 
 def sheldonscope(source_type="webcam", source_path=None):
@@ -22,7 +43,8 @@ def sheldonscope(source_type="webcam", source_path=None):
             print("Error: unable to open the webcam")
             return
 
-        print("Press 'q' to exit")
+        print("Press 'q' to exit (solo locale)")
+        frame_idx = 0
         while True:
             ret, frame = capture.read()
             if not ret:
@@ -32,17 +54,20 @@ def sheldonscope(source_type="webcam", source_path=None):
             result = detector.process_frame(frame)
 
             if result is None:
-                cv2.imshow("Sheldonscope", frame)
+                safe_imshow("Sheldonscope", frame, f"output/frame_{frame_idx}.jpg")
             else:
                 annotated_frame, facial_elements, centers, roi, x_min, y_min = result
                 annotated_frame = detect_emotion(roi, annotated_frame, x_min, y_min)
-                cv2.imshow("Sheldonscope", annotated_frame)
+                safe_imshow("Sheldonscope", annotated_frame, f"output/frame_{frame_idx}.jpg")
 
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            frame_idx += 1
+
+            if can_show_gui() and cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
         capture.release()
-        cv2.destroyAllWindows()
+        if can_show_gui():
+            cv2.destroyAllWindows()
 
     elif source_type == "video":
         if source_path is None:
@@ -54,7 +79,8 @@ def sheldonscope(source_type="webcam", source_path=None):
             print("Error: unable to open the video")
             return
 
-        print("Press 'q' to exit")
+        print("Press 'q' to exit (solo locale)")
+        frame_idx = 0
         while True:
             ret, frame = capture.read()
             if not ret:
@@ -64,17 +90,20 @@ def sheldonscope(source_type="webcam", source_path=None):
 
             result = detector.process_frame(frame)
             if result is None:
-                cv2.imshow("Sheldonscope", frame)
+                safe_imshow("Sheldonscope", frame, f"output/video_frame_{frame_idx}.jpg")
             else:
                 annotated_frame, facial_elements, centers, roi, x_min, y_min = result
                 annotated_frame = detect_emotion(roi, annotated_frame, x_min, y_min)
-                cv2.imshow("Sheldonscope", annotated_frame)
+                safe_imshow("Sheldonscope", annotated_frame, f"output/video_frame_{frame_idx}.jpg")
 
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            frame_idx += 1
+
+            if can_show_gui() and cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
         capture.release()
-        cv2.destroyAllWindows()
+        if can_show_gui():
+            cv2.destroyAllWindows()
 
     elif source_type == "image":
         if source_path is None:
@@ -90,14 +119,15 @@ def sheldonscope(source_type="webcam", source_path=None):
 
         result = detector.process_frame(frame)
         if result is None:
-            cv2.imshow("Sheldonscope", frame)
+            safe_imshow("Sheldonscope", frame, "output/output.jpg")
         else:
             annotated_frame, facial_elements, centers, roi, x_min, y_min = result
             annotated_frame = detect_emotion(roi, annotated_frame, x_min, y_min)
-            cv2.imshow("Sheldonscope", annotated_frame)
+            safe_imshow("Sheldonscope", annotated_frame, "output/output.jpg")
 
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        if can_show_gui():
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
     else:
         print("Error: invalid source type")
@@ -111,9 +141,9 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if len(args) == 0:
         sheldonscope("webcam")
-    elif args[0] == "video":
+    elif args[0] == "video" and len(args) > 1:
         sheldonscope("video", args[1])
-    elif args[0] == "image":
+    elif args[0] == "image" and len(args) > 1:
         sheldonscope("image", args[1])
     else:
-        print("Argomento non valido. Usa: webcam | video | image")
+        print("Argomento non valido. Usa: webcam | video <file> | image <file>")

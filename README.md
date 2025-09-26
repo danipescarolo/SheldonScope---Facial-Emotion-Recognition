@@ -70,6 +70,21 @@ Per le immagini, il programma si chiuderà dopo la visualizzazione.
 └── README.md              # Questo file
 
 
+## Utilizzo con Docker
+1. Build dell'immagine
+docker build -t sheldonscope:latest .
+
+2. Avvio del container
+-Per la webcam (default):
+docker run --rm -it sheldonscope:latest
+-Per un video:
+docker run --rm -it -v ${PWD}:/app sheldonscope:latest python main.py video input.mp4
+-Per un'immagine:
+docker run --rm -it -v ${PWD}:/app sheldonscope:latest python main.py image input.jpg
+
+Le immagini di output verrano salvate in un cartella 'output'. PEr i video verrà salvato ogni frame con l'emozione rilevata.
+
+
 ## Licenza
 Questo progetto è rilasciato sotto la licenza MIT.
 Sentiti libero di utilizzarlo e modificarlo.
